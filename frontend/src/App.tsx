@@ -15,16 +15,35 @@ function App() {
     }
   }
 
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        const base64String = (reader.result as string).split(',')[1]
+        resolve(base64String)
+      }
+      reader.onerror = (error) => reject(error)
+    })
+  }
   const uploadImage = async () => {
-    if(!file) return;
-    const formData = new FormData();
-    formData.append('file', file)
+    if(!file) return
 
     try{
-        const res = await axios.post("https://middle-ear-backend-270122873653.us-central1.run.app/predict", formData);
-        setPrediction(res.data.class)
+       const base64Image = await fileToBase64(file)
+
+       const res = await axios.post("/api/predict", 
+        {
+          input: { image: base64Image }
+        }
+      );
+
+       if (res.data && res.data.output) {
+          setPrediction(res.data.output.prediction)
+          console.log("Confidence:", res.data.output.confidence)
+       }
     } catch(err){
-      console.error("Error calling AI:", err);
+      console.error("Error calling AI:", err)
     }
   }
 

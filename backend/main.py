@@ -1,12 +1,33 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import sys
+import os
+import io
+import torch
+from PIL import Image
+from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from torchvision import transforms
+from contextlib import asynccontextmanager
 
-# 1. Create the Receptionist
+sys.path.append(os.path.join(os.getcwd(), "Transformer-Explainability"))
+from baselines.ViT.ViT_LRP import vit_small_patch16_224 as vit_LRP
+
+
+DEVICE = torch.device("cpu") # Cloud Run default
+MODEL_PATH = "best_model.pth"
+CLASSES = ['Earwax', 'Normal', 'Otitis Externa', 'Otitis Media', 'Object']
+
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
+
+
 app = FastAPI()
 
-# 2. The Security Pass (CORS)
-# This allows your local React app to talk to this Google Cloud server
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
