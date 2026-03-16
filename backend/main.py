@@ -89,7 +89,7 @@ def handler(job):
         original_float = np.float32(original_cv) / 255
 
         heatmap_overlay = show_cam_on_image(original_float, attribution)
-        heatmap_overlay = cv2.cvtColor(heatmap_overlay, cv2.COLOR_BGR2RGB)
+        heatmap_rgb = cv2.cvtColor(heatmap_overlay, cv2.COLOR_BGR2RGB)
 
         heatmap_uint8 = np.uint8(255 * attribution)
         threshold_value = np.percentile(heatmap_uint8, 85)
@@ -101,9 +101,9 @@ def handler(job):
         return {
             "prediction": CLASSES[pred_idx.item()],
             "confidence": f"{confidence.item() * 100:.2f}%",
-            "original_image": encode_image_base64(original_cv),
-            "heatmap_image": encode_image_base64(heatmap_overlay),
-            "contour_image": encode_image_base64(contour_img)
+            "original_image": encode_image_base64(original_cv.astype(np.uint8)),
+            "heatmap_image": encode_image_base64(heatmap_rgb.astype(np.uint8)),
+            "contour_image": encode_image_base64(contour_img.astype(np.uint8))
         }
     except Exception as e:
         return {"error": str(e)}
