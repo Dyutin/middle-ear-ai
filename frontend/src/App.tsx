@@ -9,6 +9,17 @@ interface PredictionResult {
   contour_image: string;
 }
 
+function ResultImage({ label, src }: { label: string, src: string }) {
+  return (
+    <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl">
+      <p className="text-[10px] font-black text-slate-500 uppercase mb-3 tracking-widest">{label}</p>
+      <div className="rounded-lg overflow-hidden aspect-square bg-black border border-slate-800">
+        <img src={`data:image/png;base64,${src}`} className="w-full h-full object-cover" alt={label} />
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -70,79 +81,93 @@ function App() {
   }
 
   return (
-      <div className='min-h-screen bg-slate-900 text-white flex flex-col items-center p-10'>
-        <div className='max-w-2xl w-full bg-slate-800 rounded-2xl shadow-xl border border-slate-700 p-8'>
-          <h1 className='text-3xl font-bold text-center mb-8 text-blue-400'>
-            Middle Ear AI
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-6 md:p-12">
+      <div className="max-w-6xl mx-auto">
+        
+        {/* Header */}
+        <header className="mb-10">
+          <h1 className="text-3xl font-black text-white tracking-tight">
+            MIDDLE EAR <span className="text-blue-500">AI</span>
           </h1>
+          <p className="text-slate-500 text-sm font-medium">Diagnostic Assistance System</p>
+        </header>
 
-          <div className='mb-6'>
-            <label className='block text-sm font-medium mb-2 text-slate-300 text-center'>
-              Upload Otoscopic Image
-            </label>
-            <input
-              type='file'
-              onChange={onFileChange}
-              className='w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer'
-            />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          {/* LEFT COLUMN: Controls */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Input</h2>
+              
+              <div className="space-y-4">
+                <input
+                  type="file"
+                  onChange={onFileChange}
+                  className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-800 file:text-blue-400 hover:file:bg-slate-700 cursor-pointer"
+                />
+
+                {preview && !result && (
+                  <div className="rounded-xl overflow-hidden border border-slate-800 bg-black aspect-square flex items-center justify-center">
+                    <img src={preview} alt="Preview" className="w-full h-full object-contain" />
+                  </div>
+                )}
+
+                <button
+                  onClick={uploadImage}
+                  disabled={!file || loading}
+                  className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-3 transition-all ${
+                    !file || loading 
+                    ? "bg-slate-800 text-slate-600 cursor-not-allowed" 
+                    : "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 active:scale-95"
+                  }`}
+                >
+                  {loading && <div className="animate-spin h-4 w-4 border-2 border-white/20 border-t-white rounded-full" />}
+                  {loading ? "Processing..." : "Run Analysis"}
+                </button>
+              </div>
+            </div>
+
+            {loading && (
+              <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl text-center">
+                <p className="text-blue-400 text-[11px] font-bold uppercase animate-pulse">{statusMessage}</p>
+              </div>
+            )}
           </div>
 
-          {preview && !result && (
-            <div className='mb-6 rounded-xl overflow-hidden border border-slate-700 bg-slate-900'>
-              <p className="text-[10px] text-slate-500 uppercase text-center py-1">Selection Preview</p>
-              <img src={preview} alt='Selected Preview' className='w-full h-auto max-h-64 object-contain'/>
-            </div>
-          )}
-
-          <button
-            onClick={uploadImage}
-            disabled={!file || loading}
-            className={`w-full py-3 rounded-xl font-bold transition-all mb-8 ${
-              !file || loading
-                ? "bg-slate-700 text-slate-500 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-500 active:scale-95 shadow-lg shadow-blue-900/20"
-            }`}
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>{statusMessage}</span>
-              </>
-              ) : ("Analyze with AI")
-            }       
-          </button>
-
-          {/* RESULTS SECTION */}
-          {result && (
-            <div className="space-y-8 animate-in fade-in duration-500">
-              <div className="p-6 bg-slate-900/50 border border-green-500/30 rounded-2xl text-center">
-                  <p className='text-slate-400 text-sm uppercase tracking-wider'>Diagnosis</p>
-                  <p className="text-3xl font-bold text-green-400 mt-1">{formatLabel(result.prediction)}</p>
-                  <p className="text-slate-500 text-sm mt-2">Confidence: {result.confidence}</p>
+          {/* RIGHT COLUMN: Results */}
+          <div className="lg:col-span-8">
+            {!result && !loading ? (
+              <div className="h-64 border-2 border-dashed border-slate-800 rounded-3xl flex items-center justify-center text-slate-600">
+                <p className="text-sm">Upload an otoscopic image to begin analysis</p>
               </div>
+            ) : result ? (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                
+                {/* Main Diagnosis Card */}
+                <div className="bg-blue-600 p-8 rounded-3xl shadow-2xl shadow-blue-500/10">
+                  <p className="text-blue-200 text-xs font-bold uppercase tracking-tighter mb-1">AI Classification</p>
+                  <div className="flex justify-between items-end">
+                    <h3 className="text-4xl font-black text-white uppercase">{formatLabel(result.prediction)}</h3>
+                    <div className="text-right">
+                      <p className="text-blue-200 text-[10px] font-bold uppercase">Confidence</p>
+                      <p className="text-2xl font-mono text-white">{result.confidence}</p>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="flex flex-col items-center">
-                      <p className="text-xs text-slate-400 uppercase mb-2">Original</p>
-                      <img src={`data:image/png;base64,${result.original_image}`} alt="Original" className="rounded-lg border border-slate-600 w-full" />
-                  </div>
-                  <div className="flex flex-col items-center">
-                      <p className="text-xs text-slate-400 uppercase mb-2">Attention Map</p>
-                      <img src={`data:image/png;base64,${result.heatmap_image}`} alt="Heatmap" className="rounded-lg border border-slate-600 w-full" />
-                  </div>
-                  <div className="flex flex-col items-center">
-                      <p className="text-xs text-slate-400 uppercase mb-2">Detection</p>
-                      <img src={`data:image/png;base64,${result.contour_image}`} alt="Contour" className="rounded-lg border border-slate-600 w-full" />
-                  </div>
+                {/* Explainability Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <ResultImage label="Original" src={result.original_image} />
+                  <ResultImage label="Attention Map" src={result.heatmap_image} />
+                  <ResultImage label="Detection" src={result.contour_image} />
+                </div>
               </div>
-            </div>
-          )}
+            ) : null}
+          </div>
         </div>
       </div>
-    );
+    </div>
+  );
 }
 
 export default App;
