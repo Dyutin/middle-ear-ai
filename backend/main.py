@@ -53,6 +53,12 @@ def show_cam_on_image(img, mask):
     cam = cam / np.max(cam)
     return (255 * cam).astype(np.uint8)
 
+def encode_image_base64(img_array):
+    img_pil = Image.fromarray(img_array)
+    buff = io.BytesIO()
+    img_pil.save(buff, format="PNG")
+    return base64.b64encode(buff.getvalue()).decode("utf-8")
+
 def handler(job):
     try:
         job_input = job['input']
@@ -61,7 +67,7 @@ def handler(job):
             return {"error": "No image data provided"}
         image_bytes = base64.b64decode(image_base64)
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-
+        original_cv = np.array(image.resize((224, 224)))
         img_tensor = transform(image).unsqueeze(0).to(DEVICE)
 
         img_tensor.requires_grad_()
@@ -75,10 +81,29 @@ def handler(job):
             img_tensor, method="transformer_attribution", index=pred_idx.item()
         ).detach()
 
+        attribution = attribution.reshape(1, 1, 14, 14)
+        attribution = torch.nn.functional.interpolate(attribution, scale_factor=16, mode="bilinear")
+        attribution = attribution.reshape(224, 224).cpu().numpy()
+        attribution = (attribution - attribution.min()) / (attribution.max() - attribution.min() + 1e-8)
+
+        original_float = np.float32(original_cv) / 255
+
+        heatmap_overlay = show_cam_on_image(original_float, attribution)
+        heatmap_overlay = cv2.cvtColor(heatmap_overlay, cv2.COLOR_BGR2RGB)
+
+        heatmap_uint8 = np.uint8(255 * attribution)
+        threshold_value = np.percentile(heatmap_uint8, 85)
+        _, thresh = cv2.threshold(heatmap_uint8, threshold_value, 255, cv2.THRESH_BINARY)
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contour_img = original_cv.copy()
+        cv2.drawContours(contour_img, contours, -1, (0, 255, 0), 2)
 
         return {
             "prediction": CLASSES[pred_idx.item()],
-            "confidence": f"{confidence.item() * 100:.2f}%"
+            "confidence": f"{confidence.item() * 100:.2f}%",
+            "original_image": encode_image_base64(original_cv),
+            "heatmap_image": encode_image_base64(heatmap_overlay),
+            "contour_image": encode_image_base64(contour_img)
         }
     except Exception as e:
         return {"error": str(e)}
