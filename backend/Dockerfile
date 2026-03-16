@@ -18,4 +18,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Cloud Run injects the PORT variable automatically
-CMD exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+CMD [ "python", "-u", "main.py" ]
