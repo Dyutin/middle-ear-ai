@@ -113,6 +113,10 @@ export default function App() {
 
   const conditionInfo = result ? CONDITION_INFO[result.prediction] : null;
 
+  // Font size 48px — cap height ~34px. Icon height scaled to match.
+  const ICON_H = 38;
+  const ICON_W = Math.round(ICON_H * 0.6);
+
   return (
     <div style={{ fontFamily: inter, background: BG, height: '100vh', display: 'flex', alignItems: 'flex-start', overflow: 'hidden' }}>
       <style>{`
@@ -149,49 +153,72 @@ export default function App() {
           padding: '28px 24px',
           gap: 0,
         }}>
-        {/* Hero */}
-        <div style={{ marginBottom: 22 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Vision Transformer · SupConViT</div>
-            <div style={{ height: 1, flex: 1, background: 'rgba(255,255,255,0.15)' }} />
-          </div>
-          <div style={{ fontSize: 56, fontWeight: 700, color: WHITE, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 10 }}>
-            OtoScan
-          </div>
-          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.42)', lineHeight: 1.75 }}>
-            Otoscopic image classification for five middle ear conditions, designed to support clinical decision-making in ENT practice.
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14 }}>
-            <div style={{ height: 1, flex: 1, background: 'rgba(255,255,255,0.15)' }} />
-            <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Tympanic · Membrane · Analysis</div>
-          </div>
-        </div>
 
-        {/* Input label */}
-        <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
-          Input
-        </div>
+          {/* Hero */}
+          <div style={{ marginBottom: 22 }}>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', borderRadius: 9, padding: 3, gap: 3, marginBottom: 10 }}>
-          {(['upload', 'sample'] as const).map(t => (
-            <button key={t}
-              onClick={() => { setTab(t); setResult(null); setSelectedSample(null); }}
-              style={{
-                flex: 1, padding: '7px 0', fontSize: 11, fontWeight: 600,
-                textAlign: 'center', border: 'none', borderRadius: 7,
-                cursor: 'pointer', fontFamily: inter, transition: 'all 0.15s',
-                background: tab === t ? WHITE : 'transparent',
-                color: tab === t ? RED : 'rgba(255,255,255,0.45)',
-              }}>
-              {t === 'upload' ? 'Upload' : 'Sample'}
-            </button>
-          ))}
-        </div>
+            {/* Top rule */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>SupConViT · Vision Transformer</div>
+              <div style={{ height: 1, flex: 1, background: 'rgba(255,255,255,0.15)' }} />
+            </div>
 
-        {/* Upload zone */}
-        {tab === 'upload' && (
-          <>
+            {/* Wordmark + icon inline */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 10 }}>
+              <div style={{ fontSize: 48, fontWeight: 700, color: WHITE, letterSpacing: '-0.02em', lineHeight: 1 }}>
+                OtoScan
+              </div>
+              {/* Icon sized to match cap height of 48px Inter — approx 34px tall */}
+              <svg width={ICON_W} height={ICON_H} viewBox="4 2 40 68" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+                <rect x="15" y="2" width="18" height="3" rx="1.5" fill="rgba(255,255,255,0.95)"/>
+                <path d="M15 5 L17 18 L31 18 L33 5Z" fill="rgba(255,255,255,0.95)"/>
+                <rect x="9" y="18" width="30" height="20" rx="5" fill="rgba(255,255,255,0.95)"/>
+                <circle cx="24" cy="28" r="7" fill="#7f1d1d"/>
+                <circle cx="24" cy="28" r="3.5" fill="rgba(255,255,255,0.9)"/>
+                <rect x="15" y="38" width="18" height="6" rx="3" fill="rgba(255,255,255,0.75)"/>
+                <rect x="14" y="44" width="20" height="26" rx="10" fill="rgba(255,255,255,0.95)"/>
+                <rect x="14" y="52" width="20" height="2" rx="1" fill="#7f1d1d" opacity="0.2"/>
+                <rect x="14" y="57" width="20" height="2" rx="1" fill="#7f1d1d" opacity="0.2"/>
+                <rect x="14" y="62" width="20" height="2" rx="1" fill="#7f1d1d" opacity="0.2"/>
+              </svg>
+            </div>
+
+            {/* Tagline */}
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.42)', lineHeight: 1.75 }}>
+              Otoscopic image classification for five middle ear conditions, designed to support clinical decision-making in ENT practice.
+            </div>
+
+            {/* Bottom rule */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14 }}>
+              <div style={{ height: 1, flex: 1, background: 'rgba(255,255,255,0.15)' }} />
+              <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Tympanic · Membrane · Analysis</div>
+            </div>
+          </div>
+
+          {/* Input label */}
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Input
+          </div>
+
+          {/* Tabs */}
+          <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', borderRadius: 9, padding: 3, gap: 3, marginBottom: 10 }}>
+            {(['upload', 'sample'] as const).map(t => (
+              <button key={t}
+                onClick={() => { setTab(t); setResult(null); setSelectedSample(null); }}
+                style={{
+                  flex: 1, padding: '7px 0', fontSize: 11, fontWeight: 600,
+                  textAlign: 'center', border: 'none', borderRadius: 7,
+                  cursor: 'pointer', fontFamily: inter, transition: 'all 0.15s',
+                  background: tab === t ? WHITE : 'transparent',
+                  color: tab === t ? RED : 'rgba(255,255,255,0.45)',
+                }}>
+                {t === 'upload' ? 'Upload' : 'Sample'}
+              </button>
+            ))}
+          </div>
+
+          {/* Upload zone */}
+          {tab === 'upload' && (
             <label style={{
               display: 'block', border: '1.5px dashed rgba(255,255,255,0.22)', borderRadius: 12,
               cursor: 'pointer', background: 'rgba(0,0,0,0.15)', marginBottom: 10,
@@ -200,7 +227,7 @@ export default function App() {
               <input type="file" accept="image/*" onChange={onFileChange} style={{ display: 'none' }} />
               {preview ? (
                 <div style={{ background: 'rgba(0,0,0,0.4)', padding: 8 }}>
-                  <img src={preview} alt="Preview" style={{ width: '100%', height: 'auto', borderRadius: 8, display: 'block', maxHeight: 'none' }} />
+                  <img src={preview} alt="Preview" style={{ width: '100%', height: 'auto', borderRadius: 8, display: 'block' }} />
                 </div>
               ) : (
                 <div style={{ padding: 20, textAlign: 'center' }}>
@@ -222,83 +249,83 @@ export default function App() {
                 </div>
               )}
             </label>
-          </>
-        )}
+          )}
 
-        {/* Sample grid */}
-        {tab === 'sample' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 5, marginBottom: 10 }}>
+          {/* Sample grid */}
+          {tab === 'sample' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 5, marginBottom: 10 }}>
+              {SAMPLES.map(s => (
+                <div key={s.key} onClick={() => setSelectedSample(s)}
+                  style={{
+                    background: selectedSample?.key === s.key ? WHITE : 'rgba(255,255,255,0.08)',
+                    borderRadius: 9,
+                    border: `1px solid ${selectedSample?.key === s.key ? WHITE : 'rgba(255,255,255,0.1)'}`,
+                    padding: '10px 8px 9px', cursor: 'pointer', transition: 'all 0.12s',
+                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 5,
+                  }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: selectedSample?.key === s.key ? 'rgba(127,29,29,0.45)' : 'rgba(255,255,255,0.25)' }}>
+                    {s.id}
+                  </div>
+                  <div style={{ fontSize: 10, fontWeight: 600, lineHeight: 1.3, color: selectedSample?.key === s.key ? RED : 'rgba(255,255,255,0.65)' }}>
+                    {s.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Run button */}
+          <button onClick={runAnalysis} disabled={!canRun}
+            style={{
+              width: '100%', padding: 13, borderRadius: 10, border: 'none',
+              background: canRun ? WHITE : 'rgba(255,255,255,0.1)',
+              color: canRun ? RED : 'rgba(255,255,255,0.25)',
+              fontFamily: inter, fontSize: 13, fontWeight: 800,
+              cursor: canRun ? 'pointer' : 'not-allowed',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}>
+            {loading && (
+              <span style={{ width: 12, height: 12, border: '1.5px solid rgba(127,29,29,0.2)', borderTopColor: RED, borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />
+            )}
+            {loading ? 'Processing...' : 'Run Analysis'}
+          </button>
+
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', margin: '16px 0' }} />
+
+          {/* Class legend */}
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+            5 classes
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {SAMPLES.map(s => (
-              <div key={s.key} onClick={() => setSelectedSample(s)}
-                style={{
-                  background: selectedSample?.key === s.key ? WHITE : 'rgba(255,255,255,0.08)',
-                  borderRadius: 9,
-                  border: `1px solid ${selectedSample?.key === s.key ? WHITE : 'rgba(255,255,255,0.1)'}`,
-                  padding: '10px 8px 9px', cursor: 'pointer', transition: 'all 0.12s',
-                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 5,
-                }}>
-                <div style={{ fontSize: 11, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: selectedSample?.key === s.key ? 'rgba(127,29,29,0.45)' : 'rgba(255,255,255,0.25)' }}>
-                  {s.id}
-                </div>
-                <div style={{ fontSize: 10, fontWeight: 600, lineHeight: 1.3, color: selectedSample?.key === s.key ? RED : 'rgba(255,255,255,0.65)' }}>
-                  {s.name}
-                </div>
+              <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.22)', minWidth: 18 }}>{s.id}</span>
+                <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.45)' }}>{s.name}</span>
               </div>
             ))}
           </div>
-        )}
 
-        {/* Run button */}
-        <button onClick={runAnalysis} disabled={!canRun}
-          style={{
-            width: '100%', padding: 13, borderRadius: 10, border: 'none',
-            background: canRun ? WHITE : 'rgba(255,255,255,0.1)',
-            color: canRun ? RED : 'rgba(255,255,255,0.25)',
-            fontFamily: inter, fontSize: 13, fontWeight: 800,
-            cursor: canRun ? 'pointer' : 'not-allowed',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          }}>
-          {loading && (
-            <span style={{ width: 12, height: 12, border: '1.5px solid rgba(127,29,29,0.2)', borderTopColor: RED, borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />
-          )}
-          {loading ? 'Processing...' : 'Run Analysis'}
-        </button>
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', margin: '16px 0' }} />
 
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', margin: '16px 0' }} />
+          {/* Model details */}
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+            MODEL
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {[
+              { label: 'Architecture', value: 'Custom ViT-Small' },
+              { label: 'Loss',         value: 'CE + SupCon' },
+              { label: 'Macro F1',     value: '0.9715' },
+              { label: 'Accuracy',     value: '97.31%' },
+              { label: 'AUC range',    value: '0.993 – 0.999' },
+            ].map(({ label, value }) => (
+              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderBottom: '0.5px solid rgba(255,255,255,0.07)' }}>
+                <span style={{ fontSize: 9, fontWeight: 500, color: 'rgba(255,255,255,0.3)' }}>{label}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.65)' }}>{value}</span>
+              </div>
+            ))}
+          </div>
 
-        {/* Class legend */}
-        <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
-          5 classes
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          {SAMPLES.map(s => (
-            <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.22)', minWidth: 18 }}>{s.id}</span>
-              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.45)' }}>{s.name}</span>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', margin: '16px 0' }} />
-
-        {/* Model details */}
-        <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
-          MODEL
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {[
-            { label: 'Architecture', value: 'Custom ViT-Small' },
-            { label: 'Loss',       value: 'CE + SupCon' },
-            { label: 'Macro F1',   value: '0.9715' },
-            { label: 'Accuracy',   value: '97.31%' },
-            { label: 'AUC range',  value: '0.993 – 0.999' },
-          ].map(({ label, value }) => (
-            <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '6px 0', borderBottom: '0.5px solid rgba(255,255,255,0.07)' }}>
-              <span style={{ fontSize: 9, fontWeight: 500, color: 'rgba(255,255,255,0.3)' }}>{label}</span>
-              <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.65)' }}>{value}</span>
-            </div>
-          ))}
-        </div>
         </div>
       </div>
 
